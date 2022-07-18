@@ -23,7 +23,7 @@ class SaveSpotifyMixes(cdk.Stack):
         readFunc = lambda_.Function(
             self, 'ReadSpotifyDailyMix',
             code=lambda_.InlineCode(handlerCode),
-            handler='lambda_handler.handler',
+            handler='index.handler',
             timeout=cdk.Duration.seconds(600),
             runtime=lambda_.Runtime.PYTHON_3_9
         )

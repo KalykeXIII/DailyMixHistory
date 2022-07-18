@@ -2,8 +2,8 @@ import os
 import json
 import boto3
 import base64
-from botocore.vendored import requests
-import datetime
+import requests
+from datetime import date
 import csv
 
 
@@ -54,8 +54,8 @@ def handler(event, context):
     daily_mix = daily_mix_req.json()
 
     # Instantiate a csv to write the artists and song titles to
-    filename = datetime.today().strftime('%Y-%m-%d') + '.csv'
-    f = open(filename, 'w')
+    filename = date.today().strftime('%Y-%m-%d') + '.csv'
+    f = open('/tmp/' + filename, 'w')
     writer = csv.writer(f)
 
     # Iterate through the playlist to find the song name and artists
@@ -78,7 +78,7 @@ def handler(event, context):
     s3 = boto3.client('s3')
 
     try:
-        filename = datetime.today().strftime('%Y-%m-%d') + '.csv'
+        filename = date.today().strftime('%Y-%m-%d') + '.csv'
         s3.put_object(File=filename, Bucket='MySpotifyHistory', Key=filename)
         url = s3.generate_presigned_url(
             ClientMethod='get_object',
