@@ -13,9 +13,10 @@ class SaveSpotifyMixes(cdk.Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        # Create the bucket we will be depositing data in
         bucket = s3.Bucket(self, 'MySpotifyHistory', versioned=True)
 
-        # Firstly read the lambda function definition from the handler.py file
+        # Then read the lambda function definition from the handler.py file
         with open('lambda_handler.py', encoding='utf8') as func:
             handlerCode = func.read()
 
@@ -27,6 +28,9 @@ class SaveSpotifyMixes(cdk.Stack):
             timeout=cdk.Duration.seconds(600),
             runtime=lambda_.Runtime.PYTHON_3_9
         )
+
+        # Grant the lambda function access to the bucket for read and wrtie purposes
+        bucket.grant_read_write(readFunc)
 
         # Now define the rule by which to execute the lambda function
         rule = events.Rule(self, 'RefreshDaily', schedule=events.Schedule.rate(cdk.Duration.days(1)))

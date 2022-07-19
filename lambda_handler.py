@@ -70,26 +70,28 @@ def handler(event, context):
         csv_line = [name, artists]
         # Write to the csv in memory
         writer.writerow(csv_line)
-
-    # Read the csv from memory
     f.close()
+
+    # Reopen and read as a binary
+    put_data = open('/tmp/' + filename, 'rb')
 
     # Upload it to an S3 bucket
     s3 = boto3.client('s3')
 
     try:
-        filename = date.today().strftime('%Y-%m-%d') + '.csv'
-        s3.put_object(File=filename, Bucket='MySpotifyHistory', Key=filename)
+        s3.put_object(Body=put_data, Bucket=os.environ['BUCKET_NAME'], Key=filename)
         url = s3.generate_presigned_url(
             ClientMethod='get_object',
             Params={
-                'Bucket': 'MySpotifyHistory',
+                'Bucket': os.environ['BUCKET_NAME'],
                 'Key': filename
             },
             ExpiresIn=24 * 3600
         )
-    except:
-        print('Failed')
+        return url
+    except FileNotFoundError:
+        print("The file was not found")
+        return None
 
 
 if __name__ == "__main__":
