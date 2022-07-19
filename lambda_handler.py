@@ -75,9 +75,10 @@ def handler(event, context):
     # Reopen and read as a binary
     put_data = open('/tmp/' + filename, 'rb')
 
-    # Upload it to an S3 bucket
+    # Instantiate an s3 client
     s3 = boto3.client('s3')
 
+    # Try and dump the bytes object into the S3 bucket
     try:
         s3.put_object(Body=put_data, Bucket=os.environ['BUCKET_NAME'], Key=filename)
         url = s3.generate_presigned_url(

@@ -7,12 +7,12 @@ from aws_cdk import (
 )
 import aws_cdk as cdk
 from constructs import Construct
-import lambda_handler
 
 class SaveSpotifyMixes(cdk.Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        
         # Create the bucket we will be depositing data in
         bucket = s3.Bucket(self, 'MySpotifyHistory', versioned=True)
 
@@ -39,7 +39,6 @@ class SaveSpotifyMixes(cdk.Stack):
         rule.add_target(targets.LambdaFunction(readFunc))
 
         
-
 # Establish the application
 app = cdk.App()
 # Instantiate the stack using a default user credential
