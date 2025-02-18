@@ -1,0 +1,10 @@
+services:
+  playwright:
+    build: .
+    container_name: spotify-playwright-python
+    restart: "no"  # Prevents automatic restart since this is a one-off task
+    volumes:
+      - .:/app
+      - /Users/kalyke/Desktop/Coding/DailyMixHistory/daily-mix:/app/output
+    working_dir: /app
+    command: ["python", "scraper.py"]
