@@ -11,3 +11,7 @@ python
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+
+/scraper-sync/daily-mix
+scraper-sync/.DS_Store
+.DS_Store

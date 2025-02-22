@@ -7,7 +7,7 @@ import json
 
 # Instead of just retrieving and printing the playlists to the terminal I want to create a folder for the date and a JSON file for each of the playlists
 # history_path =  "/app/output"
-history_path =  "./daily-mix/alt"
+history_path =  "./scraper-sync/daily-mix"
 # Get today's date and create a 'new' folder name to then check if it exists
 today = datetime.today()
 formatted_date = today.strftime("%Y-%m-%d")
@@ -22,7 +22,10 @@ playlist_ids = {
     'Daily Mix 3': '37i9dQZF1E39DxOGG335PJ',
     'Daily Mix 4': '37i9dQZF1E37LiZdlVfP5X',
     'Daily Mix 5': '37i9dQZF1E36PoGX3COHX1',
-    'Daily Mix 6': '37i9dQZF1E35FlVvIKsn2j'
+    'Daily Mix 6': '37i9dQZF1E35FlVvIKsn2j',
+    "Riley Daily Mix 1": "37i9dQZF1E38pkkdXfiMgT",
+    "Riley Daily Mix 2": "37i9dQZF1E37gAKPin9ftd",
+    "Riley Daily Mix 3": "37i9dQZF1E38ZrbxANczm8"
 }
 
 # Use playwright to scrape the playlists from the Web Client as Spotify removed API access - thanks Spotify
@@ -51,7 +54,6 @@ def scrape_spotify_playlist_api_via_playwright(url, api_url):
         # Define a callback function to intercept and capture the API request
         def handle_response(response):
             # Check if the response matches the API URL you are interested in
-            print(response)
             if api_url in response.url:
                 # Extract the JSON data from the response
                 playlist_data = response.json()
