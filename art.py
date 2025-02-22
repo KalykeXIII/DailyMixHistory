@@ -8,6 +8,7 @@ import cv2
 import os
 import json
 from tqdm import tqdm
+from datetime import datetime
 # Custom Packages
 from img_utils import read_image, load_images_from_urls, median_images, pca_image_fusion, boost_saturation
 
@@ -47,8 +48,8 @@ def get_all_user_images(user=''):
     # Assuming all the images are created then create a master image representing each of the mixes in totality
     all_med_images = []
     all_pca_images = []
-    # TODO: Add the ability to sort the songs by date and mix number for ease of collage creation
     for day in tqdm(days, desc="Processing user images"):
+        day_string = day.split('/')[-1]
         # Get all of the file names in the folder
         for file in os.listdir(day):
             print(file)
@@ -57,20 +58,22 @@ def get_all_user_images(user=''):
                 image_user = file.split('-')[0] if file.split('-')[0] != 'Daily' else ''
                 if user == image_user:
                     if 'PCA' in file:
-                        all_pca_images.append(read_image(os.path.join(day, file)))
+                        all_pca_images.append((day_string, file, read_image(os.path.join(day, file))))
                     elif 'Med' in file:
-                        all_med_images.append(read_image(os.path.join(day, file)))
+                        all_med_images.append((day_string, file, read_image(os.path.join(day, file))))
                     else:
                         pass
     return all_med_images, all_pca_images
 
 def create_grid_collage(img_list, images_per_row=6):
+    # Make sure the order is correct of the images fed in - by date, then by mix left to right preserving columns
+    sorted_img_list = sorted(img_list, key=lambda element: (-datetime.strptime(element[0], "%Y-%m-%d").timestamp(), element[1]))
     # Calculate the nearest multiple of 6 that's greater than or equal to the number of images
-    num_images = len(img_list)
+    num_images = len(sorted_img_list)
     rows_needed = (num_images + images_per_row - 1) // images_per_row  # Round up to nearest integer
     # Resize all images to the size of the first image (optional)
-    height, width = img_list[0].shape[:2]
-    resized_images = [cv2.resize(img, (width, height)) for img in img_list]
+    height, width = sorted_img_list[0][2].shape[:2]
+    resized_images = [cv2.resize(img[2], (width, height)) for img in sorted_img_list]
     # Create an empty list to hold rows of images
     rows = []
     # Loop through and group images into rows of fixed width
