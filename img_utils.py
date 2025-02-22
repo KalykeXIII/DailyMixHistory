@@ -77,6 +77,19 @@ def load_images_from_urls(urls):
                     print(f"Failed to load {url}: {e}")
             return images
 
+def hex_to_bgr(hex_color):
+    # Remove the '#' if present and convert the hex string to an integer
+    hex_color = hex_color.lstrip('#')
+    # Convert hex to BGR (OpenCV uses BGR format)
+    return (int(hex_color[4:6], 16), int(hex_color[2:4], 16), int(hex_color[0:2], 16))
+
+# Apply border if specified
+def add_border(img, border_width, border_color):
+    if border_width > 0:
+        return cv2.copyMakeBorder(img, border_width, border_width, border_width, border_width, 
+                                    cv2.BORDER_CONSTANT, value=border_color)
+    return img
+
 def average_images(images):
     images = [img.astype(np.float32) for img in images]
     avg_image = np.mean(images, axis=0)

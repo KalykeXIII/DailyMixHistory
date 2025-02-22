@@ -10,7 +10,7 @@ import json
 from tqdm import tqdm
 from datetime import datetime
 # Custom Packages
-from img_utils import read_image, load_images_from_urls, median_images, pca_image_fusion, boost_saturation
+from img_utils import read_image, load_images_from_urls, median_images, pca_image_fusion, boost_saturation, add_border, hex_to_bgr
 
 def create_all_mix_averages(days, overwrite=False):
     # For each of these dates 
@@ -65,7 +65,7 @@ def get_all_user_images(user=''):
                         pass
     return all_med_images, all_pca_images
 
-def create_grid_collage(img_list, images_per_row=6):
+def create_grid_collage(img_list, images_per_row=6, border_width=0, border_colour="#000000"):
     # Make sure the order is correct of the images fed in - by date, then by mix left to right preserving columns
     sorted_img_list = sorted(img_list, key=lambda element: (-datetime.strptime(element[0], "%Y-%m-%d").timestamp(), element[1]))
     # Calculate the nearest multiple of 6 that's greater than or equal to the number of images
@@ -73,7 +73,13 @@ def create_grid_collage(img_list, images_per_row=6):
     rows_needed = (num_images + images_per_row - 1) // images_per_row  # Round up to nearest integer
     # Resize all images to the size of the first image (optional)
     height, width = sorted_img_list[0][2].shape[:2]
-    resized_images = [cv2.resize(img[2], (width, height)) for img in sorted_img_list]
+    # Convert hex to BGR color
+    border_color_bgr = hex_to_bgr(border_colour)
+    resized_images = [add_border(cv2.resize(img[2], (width, height)), border_width, border_color_bgr) for img in sorted_img_list]
+    # Adjust dimensions if border is added
+    if border_width > 0:
+        height += 2 * border_width
+        width += 2 * border_width
     # Create an empty list to hold rows of images
     rows = []
     # Loop through and group images into rows of fixed width
