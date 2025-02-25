@@ -5,6 +5,13 @@ import math
 import requests
 from io import BytesIO
 from sklearn.decomposition import PCA
+import base64
+
+def encode_image(image_path):
+    # Read the image and encode it as Base64
+    with open(image_path, "rb") as image_file:
+        image_b64 = base64.b64encode(image_file.read()).decode("utf-8")
+    return image_b64
 
 def pad_to_square(img, target_size=(300, 300)):
     """Pads an image to the target size while centering it."""
@@ -107,19 +114,31 @@ def median_images(images, target_size=(300, 300)):
     median_image = median_image.astype(np.uint8)
     return median_image
 
-def pca_image_fusion(images, num_components=30, target_size=(300, 300), decay_factor=0.9, mix=None):
+def pca_image_fusion(images, num_components=30, target_size=(300, 300), decay_factor=0.9, mix=None, weights='plays'):
     # Resize all images to the target size
     resized_images = [cv2.resize(img, target_size) for img in images]
     # Flatten each image into a 1D vector (300x300x3 -> 270000)
     reshaped_images = np.array([img.reshape(-1) for img in resized_images])  
+
+    num_images = len(images)
+    num_features = target_size[0] * target_size[1] * 3  # Total pixels per image
+    
+    # Dynamically adjust num_components to avoid ValueError
+    if num_components is None:
+        num_components = min(num_images, 50)  # Default upper limit of 50 components
+    num_components = min(num_components, num_images, num_features)  # Ensure it's valid
+
     # Apply PCA
     pca = PCA(n_components=num_components)
     transformed_data = pca.fit_transform(reshaped_images)  # Project images onto principal components
     reconstructed = pca.inverse_transform(transformed_data)  # Reconstruct images
     # Compute iterative weights (higher for earlier images)
     num_images = len(images)
-    weights = np.array([(1/int(mix[i]['plays'])) for i in range(num_images)])
-    weights /= weights.sum()  # Normalize so they sum to 1
+    if weights == 'plays':
+        weights = np.array([max(1, int(mix[i]['plays'])) for i in range(num_images)])
+    elif weights == 'popularity':
+        weights = np.array([max(1, int(mix[i]['popularity'])) for i in range(num_images)])
+    weights = weights / weights.sum()
     # Weighted reconstruction
     fused_image = np.sum(reconstructed * weights[:, np.newaxis], axis=0)
     # Reshape back to image

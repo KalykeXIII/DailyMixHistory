@@ -12,6 +12,7 @@ python
 .cdk.staging
 cdk.out
 
+/playlist-covers
 /scraper-sync/daily-mix
-scraper-sync/.DS_Store
+/scraper-sync/.DS_Store
 .DS_Store
