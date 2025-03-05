@@ -6,12 +6,14 @@ import time
 import json
 
 # Instead of just retrieving and printing the playlists to the terminal I want to create a folder for the date and a JSON file for each of the playlists
-# history_path =  "/app/output"
-history_path =  "./scraper-sync/daily-mix"
+if os.getenv("DOCKERIZED"):
+    HISTORY_PATH = "/app/output"
+else:
+    HISTORY_PATH = "./daily-mix"
 # Get today's date and create a 'new' folder name to then check if it exists
 today = datetime.today()
 formatted_date = today.strftime("%Y-%m-%d")
-newpath = history_path + '/' + formatted_date
+newpath = HISTORY_PATH + '/' + formatted_date
 if not os.path.exists(newpath):
     os.makedirs(newpath)
 

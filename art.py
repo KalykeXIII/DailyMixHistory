@@ -52,7 +52,6 @@ def get_all_user_images(user=''):
         day_string = day.split('/')[-1]
         # Get all of the file names in the folder
         for file in os.listdir(day):
-            print(file)
             if file.endswith(".jpg"):
                 # If it is an image check if the user matches
                 image_user = file.split('-')[0] if file.split('-')[0] != 'Daily' else ''
@@ -96,7 +95,7 @@ def create_grid_collage(img_list, images_per_row=6, border_width=0, border_colou
 
 if __name__ == "__main__":
     # Assume that the scraping has run successfully and get all of the folders in the daily mix folder
-    days = [ f.path for f in os.scandir('./scraper-sync/daily-mix') if f.is_dir() ]
+    days = [ f.path for f in os.scandir('./daily-mix') if f.is_dir() ]
     create_all_mix_averages(days)
 
     # Create the collages 
@@ -109,5 +108,5 @@ if __name__ == "__main__":
             collage_width = 6
         med_collage = create_grid_collage(med_imgs, collage_width)
         pca_collage = create_grid_collage(pca_imgs, collage_width)
-        cv2.imwrite(f"./scraper-sync/daily-mix/{username}-MED_COLLAGE.jpg", med_collage)
-        cv2.imwrite(f"./scraper-sync/daily-mix/{username}-PCA_COLLAGE.jpg", pca_collage)
+        cv2.imwrite(f"./daily-mix/{username}-MED_COLLAGE.jpg", med_collage)
+        cv2.imwrite(f"./daily-mix/{username}-PCA_COLLAGE.jpg", pca_collage)

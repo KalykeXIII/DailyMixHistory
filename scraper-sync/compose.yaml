@@ -2,6 +2,8 @@ services:
   playwright:
     build: .
     container_name: spotify-playwright-python
+    environment:
+      - DOCKERIZED=1
     restart: "no"  # Prevents automatic restart since this is a one-off task
     volumes:
       - .:/app

@@ -13,6 +13,6 @@ python
 cdk.out
 
 /playlist-covers
-/scraper-sync/daily-mix
+/daily-mix
 /scraper-sync/.DS_Store
 .DS_Store
